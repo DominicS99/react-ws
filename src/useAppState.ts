@@ -7,8 +7,8 @@ type State = Readonly<
     }
   | {
       phase: "in-game";
-      goal: string;
-      scrambledWord: string;
+      currRound: Round;
+      finRounds: Round[];
       guess: string;
       wordsGuessed: number;
       wordsSkipped: number;
@@ -16,12 +16,18 @@ type State = Readonly<
     }
   | {
       phase: "post-game";
-      goal: string;
+      finRounds: Round[];
       wordsGuessed: number;
       wordsSkipped: number;
       wordPack: readonly string[] | null;
     }
 >;
+
+type Round = Readonly<{
+  goal: string;
+  scrambledWord: string;
+  wasGuessed: boolean;
+}>;
 
 type Action =
   | { type: "load-data"; wordPack: readonly string[] }
@@ -55,8 +61,16 @@ function scrambleWord(word: string): string {
   return wordArray.join("");
 }
 
+function startNewRound(state: State): Round {
+  const base = getRandomWord(state);
+  return {
+    goal: base,
+    scrambledWord: scrambleWord(base),
+    wasGuessed: false,
+  };
+}
+
 function reducer(state: State, action: Action): State {
-  let base = "";
   switch (action.type) {
     case "load-data":
       if (state.phase !== "pre-game") break;
@@ -68,11 +82,10 @@ function reducer(state: State, action: Action): State {
       if (state.phase === "in-game") break;
       if (state.wordPack === null) break;
 
-      base = getRandomWord(state);
       return {
         phase: "in-game",
-        goal: base,
-        scrambledWord: scrambleWord(base),
+        currRound: startNewRound(state),
+        finRounds: [],
         guess: "",
         wordsGuessed: 0,
         wordsSkipped: 0,
@@ -82,31 +95,31 @@ function reducer(state: State, action: Action): State {
       if (state.phase !== "in-game") break;
       return {
         phase: "post-game",
-        goal: state.goal,
+        finRounds: [...state.finRounds, state.currRound],
         wordsGuessed: state.wordsGuessed,
         wordsSkipped: state.wordsSkipped,
         wordPack: state.wordPack,
       };
     case "skip-word":
       if (state.phase !== "in-game") break;
-
-      base = getRandomWord(state);
       return {
         ...state,
-        goal: base,
-        scrambledWord: scrambleWord(base),
+        currRound: startNewRound(state),
+        finRounds: [...state.finRounds, state.currRound],
         guess: "",
         wordsSkipped: state.wordsSkipped + 1,
       };
     case "update-guess":
       if (state.phase !== "in-game") break;
 
-      if (normalizeWord(action.newGuess) === state.goal) {
-        base = getRandomWord(state);
+      if (normalizeWord(action.newGuess) === state.currRound.goal) {
         return {
           ...state,
-          goal: base,
-          scrambledWord: scrambleWord(base),
+          currRound: startNewRound(state),
+          finRounds: [
+            ...state.finRounds,
+            { ...state.currRound, wasGuessed: true },
+          ],
           guess: "",
           wordsGuessed: state.wordsGuessed + 1,
         };

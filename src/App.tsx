@@ -44,7 +44,7 @@ function App() {
     case "in-game": {
       return (
         <div>
-          <h1>Unscramble this: {state.scrambledWord}</h1>
+          <h1>Unscramble this: {state.currRound.scrambledWord}</h1>
           <label>
             Guess:
             <input
@@ -72,7 +72,10 @@ function App() {
     case "post-game": {
       return (
         <div>
-          <h1>Game Over! The final word was {state.goal}</h1>
+          <h1>
+            Game Over! The final word was{" "}
+            {state.finRounds[state.finRounds.length - 1].goal}
+          </h1>
           <h1>
             Congratulations! You guessed {state.wordsGuessed}{" "}
             {state.wordsGuessed === 1 ? "word" : "words"} and skipped{" "}
