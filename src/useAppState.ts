@@ -9,11 +9,15 @@ type State = Readonly<
       phase: "in-game";
       goal: string;
       guess: string;
+      wordsGuessed: number;
+      wordsSkipped: number;
       wordPack: readonly string[] | null;
     }
   | {
       phase: "post-game";
       goal: string;
+      wordsGuessed: number;
+      wordsSkipped: number;
       wordPack: readonly string[] | null;
     }
 >;
@@ -21,6 +25,8 @@ type State = Readonly<
 type Action =
   | { type: "load-data"; wordPack: readonly string[] }
   | { type: "start-game" }
+  | { type: "end-game" }
+  | { type: "skip-word" }
   | { type: "update-guess"; newGuess: string };
 
 function getInitialState(): State {
@@ -54,16 +60,36 @@ function reducer(state: State, action: Action): State {
         phase: "in-game",
         goal: getRandomWord(state),
         guess: "",
+        wordsGuessed: 0,
+        wordsSkipped: 0,
         wordPack: state.wordPack,
+      };
+    case "end-game":
+      if (state.phase !== "in-game") break;
+      return {
+        phase: "post-game",
+        goal: state.goal,
+        wordsGuessed: state.wordsGuessed,
+        wordsSkipped: state.wordsSkipped,
+        wordPack: state.wordPack,
+      };
+    case "skip-word":
+      if (state.phase !== "in-game") break;
+      return {
+        ...state,
+        goal: getRandomWord(state),
+        guess: "",
+        wordsSkipped: state.wordsSkipped + 1,
       };
     case "update-guess":
       if (state.phase !== "in-game") break;
 
       if (normalizeWord(action.newGuess) === state.goal) {
         return {
-          phase: "post-game",
-          goal: state.goal,
-          wordPack: state.wordPack,
+          ...state,
+          goal: getRandomWord(state),
+          guess: "",
+          wordsGuessed: state.wordsGuessed + 1,
         };
       }
       return {

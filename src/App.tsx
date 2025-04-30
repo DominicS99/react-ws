@@ -55,6 +55,16 @@ function App() {
               }}
             />
           </label>
+          <button onClick={() => dispatch({ type: "skip-word" })}>
+            Skip Word
+          </button>
+          <button onClick={() => dispatch({ type: "end-game" })}>
+            End Game
+          </button>
+          <span>
+            Correct Guesses: {state.wordsGuessed} || Skipped words:{" "}
+            {state.wordsSkipped}
+          </span>
           <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
       );
@@ -62,7 +72,12 @@ function App() {
     case "post-game": {
       return (
         <div>
-          <h1>Congratulations! You guessed the word: {state.goal}</h1>
+          <h1>Game Over! The final word was {state.goal}</h1>
+          <h1>
+            Congratulations! You guessed {state.wordsGuessed}{" "}
+            {state.wordsGuessed === 1 ? "word" : "words"} and skipped{" "}
+            {state.wordsSkipped} {state.wordsSkipped === 1 ? "word" : "words"}
+          </h1>
           <button onClick={() => dispatch({ type: "start-game" })}>
             Play again
           </button>
