@@ -1,0 +1,70 @@
+## This workflow is based on the workflow found here https://github.com/code-chronicles-code/react-rock-paper-scissors/blob/main/.github/workflows/deploy-github-pages.yml
+name: Auto Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows running this workflow manually from the Actions tab.
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent run, skipping runs queued between the run
+# in-progress and latest queued. However, don't cancel in-progress runs as it's
+# fine to let them complete, and this way we have fewer reports of canceled
+# runs.
+concurrency:
+  group: auto-deploy-gh-pages
+  cancel-in-progress: false
+
+jobs:
+  auto-deploy-gh-pages:
+    # Only run this job on the original repository! To run this on your fork,
+    # update or remove the line below.
+    if: github.repository == 'DominicS99/react-ws'
+
+    environment:
+      name: auto-deploy-gh-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          # TODO: replace with latest, it was causing some Yarn checksum issues recently though
+          node-version: 22.6.0
+          cache: yarn
+          cache-dependency-path: ./yarn.lock
+
+      - name: Install dependencies
+        run: yarn --immutable
+        shell: bash
+
+      - name: Build app
+        run: yarn build
+        env:
+          NODE_ENV: production
+          PUBLIC_URL: /react-ws/
+
+      - name: Set up Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
