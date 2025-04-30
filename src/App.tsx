@@ -63,9 +63,12 @@ function App() {
   switch (state.phase) {
     case "pre-game": {
       return (
-        <button onClick={() => dispatch({ type: "start-game" })}>
-          Begin new game
-        </button>
+        <div>
+          <button onClick={() => dispatch({ type: "start-game" })}>
+            Begin new game
+          </button>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
+        </div>
       );
     }
     case "in-game": {
@@ -82,6 +85,7 @@ function App() {
               }}
             />
           </label>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
       );
     }
@@ -92,6 +96,7 @@ function App() {
           <button onClick={() => dispatch({ type: "start-game" })}>
             Play again
           </button>
+          <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
       );
     }
