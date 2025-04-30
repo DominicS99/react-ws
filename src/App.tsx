@@ -3,31 +3,31 @@ import "./App.css";
 
 import useAppState from "./useAppState";
 
-
 function App() {
   const [state, dispatch] = useAppState();
 
   useEffect(() => {
-    fetch("pokemon.txt").then(response => response.text())
-    .then(text => {
-      setTimeout(() =>
-      dispatch({
-        type: "load-data", 
-        wordPack: text.split("\n").map(word => word.toLowerCase().trim()).filter(Boolean),
-      }),
-      3000,
-    );
-  });
-}, [dispatch])
+    fetch("pokemon.txt")
+      .then((response) => response.text())
+      .then((text) => {
+        setTimeout(
+          () =>
+            dispatch({
+              type: "load-data",
+              wordPack: text
+                .split("\n")
+                .map((word) => word.toLowerCase().trim())
+                .filter(Boolean),
+            }),
+          3000,
+        );
+      });
+  }, [dispatch]);
 
   switch (state.phase) {
     case "pre-game": {
       if (state.wordPack === null) {
-        return (
-          <div>
-            Loading Data...
-          </div>
-        )
+        return <div>Loading Data...</div>;
       } else {
         return (
           <div>

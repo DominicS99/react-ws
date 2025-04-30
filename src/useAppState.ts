@@ -41,7 +41,7 @@ function reducer(state: State, action: Action): State {
       if (state.phase !== "pre-game") break;
       return {
         ...state,
-        wordPack: action.wordPack
+        wordPack: action.wordPack,
       };
     case "start-game":
       if (state.phase === "in-game") break;
@@ -50,7 +50,7 @@ function reducer(state: State, action: Action): State {
         phase: "in-game",
         goal: getRandomWord(state),
         guess: "",
-        wordPack: state.wordPack
+        wordPack: state.wordPack,
       };
     case "update-guess":
       if (state.phase !== "in-game") break;
@@ -59,7 +59,7 @@ function reducer(state: State, action: Action): State {
         return {
           phase: "post-game",
           goal: state.goal,
-          wordPack: state.wordPack
+          wordPack: state.wordPack,
         };
       }
       return {
@@ -72,5 +72,5 @@ function reducer(state: State, action: Action): State {
 }
 
 export default function useAppState(): [State, Dispatch<Action>] {
-    return useReducer(reducer, null, getInitialState);
-  }
+  return useReducer(reducer, null, getInitialState);
+}
