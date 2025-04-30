@@ -16,7 +16,9 @@ function App() {
               type: "load-data",
               wordPack: text
                 .split("\n")
-                .map((word) => word.toLowerCase().trim())
+                .map((word) =>
+                  word.toLowerCase().trim().replaceAll(/\s+/g, " "),
+                )
                 .filter(Boolean),
             }),
           3000,
