@@ -1,75 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 
-type State =
-  | {
-      phase: "pre-game";
-    }
-  | {
-      phase: "in-game";
-      goal: string;
-      guess: string;
-    }
-  | {
-      phase: "post-game";
-      goal: string;
-    };
+import useAppState from "./useAppState";
 
-type Action =
-  | { type: "start-game" }
-  | { type: "update-guess"; newGuess: string };
-
-function getInitialState(): State {
-  return {
-    phase: "pre-game",
-  };
-}
-
-function getRandomWord(): string {
-  const words = ["apple", "banana", "cherry", "date", "fig", "grape"];
-  return words[Math.floor(Math.random() * words.length)];
-}
-
-function reducer(state: State, action: Action): State {
-  switch (action.type) {
-    case "start-game":
-      if (state.phase === "in-game") break;
-      return {
-        phase: "in-game",
-        goal: getRandomWord(),
-        guess: "",
-      };
-    case "update-guess":
-      if (state.phase !== "in-game") break;
-
-      if (action.newGuess === state.goal) {
-        return {
-          phase: "post-game",
-          goal: state.goal,
-        };
-      }
-      return {
-        ...state,
-        guess: action.newGuess,
-      };
-  }
-
-  return state;
-}
 
 function App() {
-  const [state, dispatch] = React.useReducer(reducer, null, getInitialState);
+  const [state, dispatch] = useAppState();
+
+  useEffect(() => {
+    fetch("pokemon.txt").then(response => response.text())
+    .then(text => {
+      setTimeout(() =>
+      dispatch({
+        type: "load-data", 
+        wordPack: text.split("\n").map(word => word.toLowerCase().trim()).filter(Boolean),
+      }),
+      3000,
+    );
+  });
+}, [dispatch])
 
   switch (state.phase) {
     case "pre-game": {
-      return (
-        <div>
-          <button onClick={() => dispatch({ type: "start-game" })}>
-            Begin new game
-          </button>
-          <pre>{JSON.stringify(state, null, 2)}</pre>
-        </div>
-      );
+      if (state.wordPack === null) {
+        return (
+          <div>
+            Loading Data...
+          </div>
+        )
+      } else {
+        return (
+          <div>
+            <button onClick={() => dispatch({ type: "start-game" })}>
+              Begin new game
+            </button>
+            <pre>{JSON.stringify(state, null, 2)}</pre>
+          </div>
+        );
+      }
     }
     case "in-game": {
       return (
