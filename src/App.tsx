@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./App.css";
 
 import useAppState from "./useAppState";
 
 function App() {
   const [state, dispatch] = useAppState();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     fetch("pokemon.txt")
@@ -26,6 +27,24 @@ function App() {
       });
   }, [dispatch]);
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      switch (state.phase) {
+        case "pre-game": {
+          if (e.key === "Enter") {
+            buttonRef.current?.click();
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [state.phase, buttonRef]);
+
   switch (state.phase) {
     case "pre-game": {
       if (state.wordPack === null) {
@@ -33,7 +52,11 @@ function App() {
       } else {
         return (
           <div>
-            <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
+            <button
+              ref={buttonRef}
+              onClick={() => dispatch({ type: "start-game" })}
+              autoFocus
+            >
               Begin new game
             </button>
             <pre>{JSON.stringify(state, null, 2)}</pre>
@@ -58,7 +81,7 @@ function App() {
           <button onClick={() => dispatch({ type: "skip-word" })}>
             Skip Word
           </button>
-          <button onClick={() => dispatch({ type: "end-game" })} autoFocus>
+          <button onClick={() => dispatch({ type: "end-game" })}>
             End Game
           </button>
           <span>
@@ -81,7 +104,11 @@ function App() {
             {state.wordsGuessed === 1 ? "word" : "words"} and skipped{" "}
             {state.wordsSkipped} {state.wordsSkipped === 1 ? "word" : "words"}
           </h1>
-          <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
+          <button
+            ref={buttonRef}
+            onClick={() => dispatch({ type: "start-game" })}
+            autoFocus
+          >
             Play again
           </button>
           <pre>{JSON.stringify(state, null, 2)}</pre>
