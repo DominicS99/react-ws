@@ -33,7 +33,7 @@ function App() {
       } else {
         return (
           <div>
-            <button onClick={() => dispatch({ type: "start-game" })}>
+            <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
               Begin new game
             </button>
             <pre>{JSON.stringify(state, null, 2)}</pre>
@@ -58,7 +58,7 @@ function App() {
           <button onClick={() => dispatch({ type: "skip-word" })}>
             Skip Word
           </button>
-          <button onClick={() => dispatch({ type: "end-game" })}>
+          <button onClick={() => dispatch({ type: "end-game" })} autoFocus>
             End Game
           </button>
           <span>
@@ -81,7 +81,7 @@ function App() {
             {state.wordsGuessed === 1 ? "word" : "words"} and skipped{" "}
             {state.wordsSkipped} {state.wordsSkipped === 1 ? "word" : "words"}
           </h1>
-          <button onClick={() => dispatch({ type: "start-game" })}>
+          <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
             Play again
           </button>
           <pre>{JSON.stringify(state, null, 2)}</pre>
