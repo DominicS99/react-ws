@@ -10,15 +10,15 @@ type State = Readonly<
       currRound: Round;
       finRounds: Round[];
       guess: string;
-      wordsGuessed: number;
-      wordsSkipped: number;
+      numWordsGuessed: number;
+      numWordsSkipped: number;
       wordPack: readonly string[] | null;
     }
   | {
       phase: "post-game";
       finRounds: Round[];
-      wordsGuessed: number;
-      wordsSkipped: number;
+      numWordsGuessed: number;
+      numWordsSkipped: number;
       wordPack: readonly string[] | null;
     }
 >;
@@ -87,8 +87,8 @@ function reducer(state: State, action: Action): State {
         currRound: startNewRound(state),
         finRounds: [],
         guess: "",
-        wordsGuessed: 0,
-        wordsSkipped: 0,
+        numWordsGuessed: 0,
+        numWordsSkipped: 0,
         wordPack: state.wordPack,
       };
     case "end-game":
@@ -96,8 +96,8 @@ function reducer(state: State, action: Action): State {
       return {
         phase: "post-game",
         finRounds: [...state.finRounds, state.currRound],
-        wordsGuessed: state.wordsGuessed,
-        wordsSkipped: state.wordsSkipped,
+        numWordsGuessed: state.numWordsGuessed,
+        numWordsSkipped: state.numWordsSkipped,
         wordPack: state.wordPack,
       };
     case "skip-word":
@@ -107,7 +107,7 @@ function reducer(state: State, action: Action): State {
         currRound: startNewRound(state),
         finRounds: [...state.finRounds, state.currRound],
         guess: "",
-        wordsSkipped: state.wordsSkipped + 1,
+        numWordsSkipped: state.numWordsSkipped + 1,
       };
     case "update-guess":
       if (state.phase !== "in-game") break;
@@ -121,7 +121,7 @@ function reducer(state: State, action: Action): State {
             { ...state.currRound, wasGuessed: true },
           ],
           guess: "",
-          wordsGuessed: state.wordsGuessed + 1,
+          numWordsGuessed: state.numWordsGuessed + 1,
         };
       }
       return {
