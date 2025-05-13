@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./App.css";
 
 import useAppState from "./useAppState";
 
 function App() {
   const [state, dispatch] = useAppState();
+  const startButtonRef = useRef<HTMLButtonElement>(null);
+  const playAgainButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Load the word pack from a file
   useEffect(() => {
     fetch("pokemon.txt")
       .then((response) => response.text())
@@ -26,6 +29,35 @@ function App() {
       });
   }, [dispatch]);
 
+  // Handle the focus of the buttons, even when clicked off
+  useEffect(() => {
+    function handleDocClick(buttonRef: React.RefObject<HTMLButtonElement | null>) {
+      setTimeout(() => {
+        buttonRef.current?.focus();
+      }
+      , 0);
+    }
+
+    switch (state.phase) {
+      case "pre-game": {
+        document.addEventListener("click", () => {
+          handleDocClick(startButtonRef);
+        });
+        break;
+      }
+      case "in-game": {
+
+        break;
+      }
+      case "post-game": {
+        document.addEventListener("click", () => {
+          handleDocClick(playAgainButtonRef);
+        });
+        break;
+      }
+    }
+  }, [state.phase]);
+      
   switch (state.phase) {
     case "pre-game": {
       if (state.wordPack === null) {
@@ -33,7 +65,10 @@ function App() {
       } else {
         return (
           <div>
-            <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
+            <button onClick={() => dispatch({ type: "start-game" })} 
+            ref={startButtonRef}
+            autoFocus
+            >
               Begin new game
             </button>
             <pre>{JSON.stringify(state, null, 2)}</pre>
@@ -83,7 +118,8 @@ function App() {
             {state.numWordsSkipped}{" "}
             {state.numWordsSkipped === 1 ? "word" : "words"}
           </h1>
-          <button onClick={() => dispatch({ type: "start-game" })} autoFocus>
+          <button onClick={() => dispatch({ type: "start-game" })}
+        ref={playAgainButtonRef}>
             Play again
           </button>
           <pre>{JSON.stringify(state, null, 2)}</pre>
