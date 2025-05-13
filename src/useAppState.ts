@@ -36,6 +36,8 @@ type Action =
   | { type: "skip-word" }
   | { type: "update-guess"; newGuess: string };
 
+export type { Action };
+
 function getInitialState(): State {
   return {
     phase: "pre-game",
