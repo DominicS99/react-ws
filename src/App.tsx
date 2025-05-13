@@ -31,11 +31,12 @@ function App() {
 
   // Handle the focus of the buttons, even when clicked off
   useEffect(() => {
-    function handleDocClick(buttonRef: React.RefObject<HTMLButtonElement | null>) {
+    function handleDocClick(
+      buttonRef: React.RefObject<HTMLButtonElement | null>,
+    ) {
       setTimeout(() => {
         buttonRef.current?.focus();
-      }
-      , 0);
+      }, 0);
     }
 
     switch (state.phase) {
@@ -46,7 +47,6 @@ function App() {
         break;
       }
       case "in-game": {
-
         break;
       }
       case "post-game": {
@@ -57,7 +57,7 @@ function App() {
       }
     }
   }, [state.phase]);
-      
+
   switch (state.phase) {
     case "pre-game": {
       if (state.wordPack === null) {
@@ -65,9 +65,10 @@ function App() {
       } else {
         return (
           <div>
-            <button onClick={() => dispatch({ type: "start-game" })} 
-            ref={startButtonRef}
-            autoFocus
+            <button
+              onClick={() => dispatch({ type: "start-game" })}
+              ref={startButtonRef}
+              autoFocus
             >
               Begin new game
             </button>
@@ -118,8 +119,10 @@ function App() {
             {state.numWordsSkipped}{" "}
             {state.numWordsSkipped === 1 ? "word" : "words"}
           </h1>
-          <button onClick={() => dispatch({ type: "start-game" })}
-        ref={playAgainButtonRef}>
+          <button
+            onClick={() => dispatch({ type: "start-game" })}
+            ref={playAgainButtonRef}
+          >
             Play again
           </button>
           <pre>{JSON.stringify(state, null, 2)}</pre>
