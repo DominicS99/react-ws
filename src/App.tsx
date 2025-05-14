@@ -6,6 +6,7 @@ import useAppState from "./useAppState";
 function App() {
   const [state, dispatch] = useAppState();
   const startButtonRef = useRef<HTMLButtonElement>(null);
+  const wordInputRef = useRef<HTMLInputElement>(null);
   const playAgainButtonRef = useRef<HTMLButtonElement>(null);
 
   // Load the word pack from a file
@@ -29,10 +30,10 @@ function App() {
       });
   }, [dispatch]);
 
-  // Handle the focus of the buttons, even when clicked off
+  // Handle the focus of the buttons / input box, even when clicked off
   useEffect(() => {
     function handleDocClick(
-      buttonRef: React.RefObject<HTMLButtonElement | null>,
+      buttonRef: React.RefObject<HTMLButtonElement | HTMLInputElement | null>,
     ) {
       setTimeout(() => {
         buttonRef.current?.focus();
@@ -47,6 +48,9 @@ function App() {
         break;
       }
       case "in-game": {
+        document.addEventListener("click", () => {
+          handleDocClick(wordInputRef);
+        });
         break;
       }
       case "post-game": {
@@ -85,10 +89,12 @@ function App() {
             Guess:
             <input
               type="text"
+              style={{ textTransform: "uppercase" }}
               value={state.guess}
               onChange={(e) => {
                 dispatch({ type: "update-guess", newGuess: e.target.value });
               }}
+              ref={wordInputRef}
               autoFocus
             />
           </label>
