@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import "./App.css";
 
-import useAppState from "./useAppState";
+import useAppState, { normalizeWord } from "./useAppState";
 
 function App() {
   const [state, dispatch] = useAppState();
@@ -20,13 +20,20 @@ function App() {
               type: "load-data",
               wordPack: text
                 .split("\n")
-                .map((word) =>
-                  word.toLowerCase().trim().replaceAll(/\s+/g, " "),
-                )
+                .map((word) => normalizeWord(word))
                 .filter(Boolean),
             }),
-          3000,
+          0,
         );
+      });
+
+    fetch("https://unpkg.com/naught-words@1.2.0/en.json")
+      .then((response) => response.json())
+      .then((jsonObj) => {
+        dispatch({
+          type: "load-banned-words",
+          bannedWords: jsonObj.map((word: string) => normalizeWord(word)),
+        });
       });
   }, [dispatch]);
 
@@ -76,7 +83,6 @@ function App() {
             >
               Begin new game
             </button>
-            <pre>{JSON.stringify(state, null, 2)}</pre>
           </div>
         );
       }
@@ -108,7 +114,6 @@ function App() {
             Correct Guesses: {state.numWordsGuessed} || Skipped words:{" "}
             {state.numWordsSkipped}
           </span>
-          <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
       );
     }
@@ -131,7 +136,6 @@ function App() {
           >
             Play again
           </button>
-          <pre>{JSON.stringify(state, null, 2)}</pre>
         </div>
       );
     }
