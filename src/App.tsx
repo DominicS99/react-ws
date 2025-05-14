@@ -5,9 +5,9 @@ import useAppState from "./useAppState";
 
 function App() {
   const [state, dispatch] = useAppState();
-  const startButtonRef = useRef<HTMLButtonElement>(null);
-  const wordInputRef = useRef<HTMLInputElement>(null);
-  const playAgainButtonRef = useRef<HTMLButtonElement>(null);
+  const startButtonRef = useRef<HTMLButtonElement | null>(null);
+  const wordInputRef = useRef<HTMLInputElement | null>(null);
+  const playAgainButtonRef = useRef<HTMLButtonElement | null>(null);
 
   // Load the word pack from a file
   useEffect(() => {
