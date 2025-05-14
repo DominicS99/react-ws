@@ -55,12 +55,17 @@ function normalizeWord(word: string): string {
 }
 
 function scrambleWord(word: string): string {
-  const wordArray = word.split("");
-  for (let i = wordArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [wordArray[i], wordArray[j]] = [wordArray[j], wordArray[i]];
+  if (word.length < 2) return word; // Shouldn't matter in this game, but works as a safety net
+  let res = word;
+  while (res === word) {
+    const wordArray = word.split("");
+    for (let i = wordArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [wordArray[i], wordArray[j]] = [wordArray[j], wordArray[i]];
+    }
+    res = wordArray.join("");
   }
-  return wordArray.join("");
+  return res;
 }
 
 function startNewRound(state: State): Round {
